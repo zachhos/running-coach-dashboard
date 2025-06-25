@@ -1,6 +1,7 @@
 // Strava API Configuration
 const STRAVA_CONFIG = {
-    client_id: '165812', // Keep your Client ID here
+    client_id: '165812', // Your actual Client ID
+    client_secret: 'eef27693c4c587b1a87f4ca7356580bd595b7519', // Your actual Client Secret - this is expected to be public for client-side apps
     redirect_uri: window.location.origin + window.location.pathname,
     scope: 'read,activity:read'
 };
@@ -13,10 +14,13 @@ class StravaAuth {
     }
 
     init() {
-        // Check if we're returning from Strava OAuth with token
-        this.handleTokenFromUrl();
+        // Check if we're returning from Strava OAuth
+        const urlParams = new URLSearchParams(window.location.search);
+        const authCode = urlParams.get('code');
         
-        if (this.accessToken) {
+        if (authCode && !this.accessToken) {
+            this.exchangeCodeForToken(authCode);
+        } else if (this.accessToken) {
             this.showUserInfo();
             window.dashboard.loadDashboard();
         } else {
@@ -33,47 +37,51 @@ class StravaAuth {
         const authUrl = `https://www.strava.com/oauth/authorize?` +
             `client_id=${STRAVA_CONFIG.client_id}&` +
             `redirect_uri=${encodeURIComponent(STRAVA_CONFIG.redirect_uri)}&` +
-            `response_type=token&` + // Using implicit flow - no client secret needed
+            `response_type=code&` + // Back to authorization code flow
             `scope=${STRAVA_CONFIG.scope}`;
         
         window.location.href = authUrl;
     }
 
-    handleTokenFromUrl() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        
-        if (accessToken) {
-            this.accessToken = accessToken;
-            localStorage.setItem('strava_access_token', accessToken);
-            
-            // Get athlete info
-            this.getAthleteInfo();
-            
-            // Clean URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    }
-
-    async getAthleteInfo() {
+    async exchangeCodeForToken(code) {
         try {
             document.getElementById('loading').style.display = 'block';
             
-            const response = await fetch('https://www.strava.com/api/v3/athlete', {
+            const response = await fetch('https://www.strava.com/oauth/token', {
+                method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: STRAVA_CONFIG.client_id,
+                    client_secret: STRAVA_CONFIG.client_secret,
+                    code: code,
+                    grant_type: 'authorization_code'
+                })
             });
 
-            if (response.ok) {
-                this.athlete = await response.json();
+            const data = await response.json();
+            
+            if (data.access_token) {
+                this.accessToken = data.access_token;
+                this.athlete = data.athlete;
+                
+                // Store in localStorage
+                localStorage.setItem('strava_access_token', this.accessToken);
                 localStorage.setItem('strava_athlete', JSON.stringify(this.athlete));
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
                 this.showUserInfo();
                 window.dashboard.loadDashboard();
+            } else {
+                console.error('Token exchange failed:', data);
+                alert('Failed to connect to Strava. Please try again.');
             }
         } catch (error) {
-            console.error('Error fetching athlete info:', error);
+            console.error('Error exchanging code for token:', error);
+            alert('Error connecting to Strava. Please try again.');
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
