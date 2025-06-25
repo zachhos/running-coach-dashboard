@@ -36,10 +36,27 @@ class StravaAuth {
         const authUrl = `https://www.strava.com/oauth/authorize?` +
             `client_id=${STRAVA_CONFIG.client_id}&` +
             `redirect_uri=${encodeURIComponent(STRAVA_CONFIG.redirect_uri)}&` +
-            `response_type=code&` +
+            `response_type=token&` + // Changed from 'code' to 'token'
             `scope=${STRAVA_CONFIG.scope}`;
         
         window.location.href = authUrl;
+    }
+
+    handleTokenFromUrl() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        
+        if (accessToken) {
+            this.accessToken = accessToken;
+            localStorage.setItem('strava_access_token', accessToken);
+            
+            // Get athlete info
+            this.getAthleteInfo();
+            
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     }
 
     async exchangeCodeForToken(code) {
