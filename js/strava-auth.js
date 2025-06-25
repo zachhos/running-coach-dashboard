@@ -1,7 +1,7 @@
 // Strava API Configuration
 const STRAVA_CONFIG = {
-    client_id: '165812', // Your actual Client ID
-    client_secret: 'eef27693c4c587b1a87f4ca7356580bd595b7519', // Your actual Client Secret - this is expected to be public for client-side apps
+    client_id: '165812', // Replace with your actual Client ID
+    client_secret: 'eef27693c4c587b1a87f4ca7356580bd595b7519', // Replace with your actual Client Secret
     redirect_uri: window.location.origin + window.location.pathname,
     scope: 'read,activity:read'
 };
@@ -22,9 +22,19 @@ class StravaAuth {
             this.exchangeCodeForToken(authCode);
         } else if (this.accessToken) {
             this.showUserInfo();
-            window.dashboard.loadDashboard();
+            // Wait for dashboard to be ready, then load it
+            this.waitForDashboardAndLoad();
         } else {
             this.showConnectButton();
+        }
+    }
+
+    waitForDashboardAndLoad() {
+        if (window.dashboard && window.dashboard.loadDashboard) {
+            window.dashboard.loadDashboard();
+        } else {
+            // Wait a bit and try again
+            setTimeout(() => this.waitForDashboardAndLoad(), 100);
         }
     }
 
@@ -37,7 +47,7 @@ class StravaAuth {
         const authUrl = `https://www.strava.com/oauth/authorize?` +
             `client_id=${STRAVA_CONFIG.client_id}&` +
             `redirect_uri=${encodeURIComponent(STRAVA_CONFIG.redirect_uri)}&` +
-            `response_type=code&` + // Back to authorization code flow
+            `response_type=code&` +
             `scope=${STRAVA_CONFIG.scope}`;
         
         window.location.href = authUrl;
@@ -74,7 +84,8 @@ class StravaAuth {
                 window.history.replaceState({}, document.title, window.location.pathname);
                 
                 this.showUserInfo();
-                window.dashboard.loadDashboard();
+                // Wait for dashboard to be ready
+                this.waitForDashboardAndLoad();
             } else {
                 console.error('Token exchange failed:', data);
                 alert('Failed to connect to Strava. Please try again.');
