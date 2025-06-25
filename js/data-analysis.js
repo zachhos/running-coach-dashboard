@@ -232,4 +232,24 @@ class RunningAnalyzer {
                     day: dayName,
                     date: runDate.toLocaleDateString(),
                     type: 'Long Run',
-                    description: `
+                    description: `${this.suggestLongRunDistance()} miles easy pace`,
+                    badge: 'long'
+                });
+            } else if (Math.random() > 0.4) { // 60% chance of run on other days
+                const runType = Math.random() > 0.7 ? 'tempo' : 'easy';
+                plannedRuns.push({
+                    day: dayName,
+                    date: runDate.toLocaleDateString(),
+                    type: runType === 'tempo' ? 'Tempo Run' : 'Easy Run',
+                    description: runType === 'tempo' ? '4-5 miles with tempo segments' : '3-5 miles conversational pace',
+                    badge: runType
+                });
+            }
+        }
+        
+        return plannedRuns;
+    }
+}
+
+// Make available globally
+window.RunningAnalyzer = RunningAnalyzer;

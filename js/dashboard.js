@@ -129,4 +129,13 @@ class Dashboard {
         container.innerHTML = races.map(race => `
             <div class="race-card">
                 <h4>${race.name}</h4>
-                <p>${race.da
+                <p>${race.date} • ${race.distance} • ${race.location}</p>
+            </div>
+        `).join('');
+    }
+}
+
+// Initialize dashboard when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.dashboard = new Dashboard();
+});
