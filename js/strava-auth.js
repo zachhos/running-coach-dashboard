@@ -1,6 +1,6 @@
 // Strava API Configuration
 const STRAVA_CONFIG = {
-    client_id: '165812', // My Strava client ID
+    client_id: '165812', // Keep your Client ID here
     redirect_uri: window.location.origin + window.location.pathname,
     scope: 'read,activity:read'
 };
@@ -13,13 +13,10 @@ class StravaAuth {
     }
 
     init() {
-        // Check if we're returning from Strava OAuth
-        const urlParams = new URLSearchParams(window.location.search);
-        const authCode = urlParams.get('code');
+        // Check if we're returning from Strava OAuth with token
+        this.handleTokenFromUrl();
         
-        if (authCode && !this.accessToken) {
-            this.exchangeCodeForToken(authCode);
-        } else if (this.accessToken) {
+        if (this.accessToken) {
             this.showUserInfo();
             window.dashboard.loadDashboard();
         } else {
@@ -36,7 +33,7 @@ class StravaAuth {
         const authUrl = `https://www.strava.com/oauth/authorize?` +
             `client_id=${STRAVA_CONFIG.client_id}&` +
             `redirect_uri=${encodeURIComponent(STRAVA_CONFIG.redirect_uri)}&` +
-            `response_type=token&` + // Changed from 'code' to 'token'
+            `response_type=token&` + // Using implicit flow - no client secret needed
             `scope=${STRAVA_CONFIG.scope}`;
         
         window.location.href = authUrl;
@@ -59,43 +56,24 @@ class StravaAuth {
         }
     }
 
-    async exchangeCodeForToken(code) {
+    async getAthleteInfo() {
         try {
-            // Show loading
             document.getElementById('loading').style.display = 'block';
             
-            const response = await fetch('https://www.strava.com/oauth/token', {
-                method: 'POST',
+            const response = await fetch('https://www.strava.com/api/v3/athlete', {
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: STRAVA_CONFIG.client_id,
-                    client_secret: 'eef27693c4c587b1a87f4ca7356580bd595b7519', // My Strava client secret
-                    code: code,
-                    grant_type: 'authorization_code'
-                })
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
             });
 
-            const data = await response.json();
-            
-            if (data.access_token) {
-                this.accessToken = data.access_token;
-                this.athlete = data.athlete;
-                
-                // Store in localStorage
-                localStorage.setItem('strava_access_token', this.accessToken);
+            if (response.ok) {
+                this.athlete = await response.json();
                 localStorage.setItem('strava_athlete', JSON.stringify(this.athlete));
-                
-                // Clean up URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-                
                 this.showUserInfo();
                 window.dashboard.loadDashboard();
             }
         } catch (error) {
-            console.error('Error exchanging code for token:', error);
-            alert('Error connecting to Strava. Please try again.');
+            console.error('Error fetching athlete info:', error);
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
