@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Running Coach</title>
+    <title>Running Analysis Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="newsletter-header">
             <div class="header-content">
-                <h1>🏃‍♂️ Weekly Running Coach</h1>
+                <h1>Running Analysis Dashboard</h1>
+                <p class="tagline">AI-Powered Training Insights</p>
                 <p class="date-display" id="current-date"></p>
             </div>
             <div class="auth-section">
@@ -34,66 +34,73 @@
 
         <!-- Main Dashboard -->
         <main id="dashboard" class="dashboard" style="display: none;">
-            <!-- Training Summary -->
+            <!-- Key Coaching Indicators -->
             <section class="newsletter-section">
-                <h2>📊 This Week's Training Summary</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Miles</h3>
-                        <span id="weekly-miles" class="stat-value">--</span>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Runs Completed</h3>
-                        <span id="weekly-runs" class="stat-value">--</span>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Average Pace</h3>
-                        <span id="avg-pace" class="stat-value">--</span>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Training Load</h3>
-                        <span id="training-load" class="stat-value">--</span>
-                    </div>
+                <h2>Training Readiness Assessment</h2>
+                <div id="coaching-indicators" class="coaching-indicators">
+                    <!-- Dynamic coaching indicators -->
                 </div>
             </section>
 
-            <!-- Recommendations -->
+            <!-- Training Load Analysis -->
             <section class="newsletter-section">
-                <h2>💡 This Week's Recommendations</h2>
-                <div class="recommendation-toggle">
-                    <button id="steady-mode" class="mode-btn active">Steady Week</button>
-                    <button id="challenge-mode" class="mode-btn">Challenge Week</button>
-                </div>
-                <div id="recommendations-content" class="recommendations">
-                    <!-- Dynamic content will be inserted here -->
+                <h2>Training Load Analysis</h2>
+                <div id="training-load-analysis" class="analysis-grid">
+                    <!-- Dynamic content -->
                 </div>
             </section>
 
-            <!-- Upcoming Runs -->
+            <!-- Volume & Consistency Trends -->
             <section class="newsletter-section">
-                <h2>📅 Planned Runs</h2>
-                <div id="planned-runs" class="planned-runs">
-                    <!-- Dynamic content will be inserted here -->
+                <h2>Volume & Consistency Trends</h2>
+                <div id="volume-trends" class="analysis-grid">
+                    <!-- Dynamic content -->
                 </div>
             </section>
 
-            <!-- Philadelphia Races -->
+            <!-- Effort Distribution -->
             <section class="newsletter-section">
-                <h2>🏁 Upcoming Philadelphia Races</h2>
-                <div id="race-calendar" class="race-calendar">
-                    <!-- Dynamic content will be inserted here -->
+                <h2>Training Effort Distribution</h2>
+                <div id="effort-distribution" class="analysis-grid">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Weekly Pattern Analysis -->
+            <section class="newsletter-section">
+                <h2>Recent Weekly Patterns</h2>
+                <div id="weekly-patterns" class="week-breakdown">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- AI Coach Recommendations -->
+            <section class="newsletter-section">
+                <h2>AI Running Coach Recommendations</h2>
+                <div class="ai-coach-section">
+                    <button id="generate-plan-btn" class="generate-plan-btn">
+                        Generate Weekly Training Plan
+                    </button>
+                    <div id="ai-loading" class="loading-section" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p>Analyzing your training data and generating recommendations...</p>
+                    </div>
+                    <div id="weekly-plan" class="weekly-plan" style="display: none;">
+                        <!-- AI recommendations will appear here -->
+                    </div>
                 </div>
             </section>
         </main>
 
-        <!-- Footer -->
         <footer class="newsletter-footer">
-            <p>Keep running strong! 💪</p>
+            Professional Running Analysis Dashboard
         </footer>
     </div>
 
     <script src="js/strava-auth.js"></script>
-    <script src="js/data-analysis.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/enhanced-analysis.js"></script>
+    <script src="js/smashrun-features.js"></script>
+    <script src="js/ai-running-coach.js"></script>
+    <script src="js/integrated-dashboard.js"></script>
 </body>
 </html>
